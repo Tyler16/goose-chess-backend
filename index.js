@@ -19,6 +19,7 @@ server.on("connection", socket => {
 		try {
 			handleMessage(JSON.parse(data), user)
 		} catch(error) {
+			console.log(data)
 			console.log("error handling message from user", user.id, error)
 		}
 	})
@@ -47,15 +48,16 @@ function handleMessage(msg, user) {
 		updateGameQueue()
 	} else if (msg.type === "boardUpdate" && user.opponent) {
 		// assume board is correct and send board to opponent
-		user.opponent.socket.send({
+		console.log(msg.data)
+		user.opponent.socket.send(JSON.stringify({
 			type: "boardUpdate",
 			data: msg.data
-		})
+		}))
 	} else if (msg.type === "endGame" && user.opponent) {
 		// assume end game message is correct and stop the game
-		user.opponent.socket.send({
+		user.opponent.socket.send(JSON.stringify({
 			type: "endGame"
-		})
+		}))
 		user.opponent.opponent = null
 		user.opponent = null
 	}
