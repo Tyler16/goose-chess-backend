@@ -26,6 +26,10 @@ server.on("connection", socket => {
 	socket.on("close", () => {
 		//remove user from active users list
 		console.log("user with id", user.id, "disconnected")
+		if (user.opponent) {
+			user.opponent.socket.send(JSON.stringify({type: "close"}))
+			delete users[user.opponent.id]
+		}
 		delete users[user.id]
 		console.log("all users:", Object.keys(users))
 	})
@@ -75,7 +79,7 @@ function updateGameQueue() {
 				seeking.socket.send(JSON.stringify({
 					type: "gameFound",
 					playerNum: 1
-				)}))
+				}))
 				user.socket.send(JSON.stringify({
 					type: "gameFound",
 					playerNum: 2
